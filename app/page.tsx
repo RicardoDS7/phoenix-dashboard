@@ -12,7 +12,7 @@ export default function Home() {
       <h1 className="text-6xl font-black mb-16">Phoenix Energy Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        <Link href="./add-client"
+        <Link href="/add-client"
               className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
         >
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
@@ -32,7 +32,7 @@ export default function Home() {
 
         </Link>
 
-        <Link href="./create-quote"
+        <Link href="/create-quote"
               className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
         >
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
@@ -42,7 +42,7 @@ export default function Home() {
 
         </Link>
 
-        <Link href="./edit-quote"
+        <Link href="/edit-quote"
               className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
         >
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
@@ -52,7 +52,7 @@ export default function Home() {
 
         </Link>
 
-        <Link href="./create-project-summary"
+        <Link href="/create-project-summary"
               className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
         >
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
