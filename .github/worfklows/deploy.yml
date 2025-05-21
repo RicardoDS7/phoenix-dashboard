@@ -1,4 +1,4 @@
-name: Deploy Phoenix Dashboard to GitHub Pages
+name: Build & Deploy Phoenix Dashboard
 
 on:
   push:
@@ -6,17 +6,22 @@ on:
       - main
 
 permissions:
-  contents: write
+  pages: write           # for deploy-pages
+  id-token: write        # for deploy-pages (OIDC)
+  contents: read         # for checkout
 
 jobs:
-  deploy:
+  pages:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://<your-username>.github.io/phoenix-dashboard/
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -24,16 +29,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
+      - name: Build static export
         run: npm run build
 
-      - name: Show build output
-        run: |
-          echo "=== contents of out/ ==="
-          ls -R out
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./out/phoenix-dashboard
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out/phoenix-dashboard
+        uses: actions/deploy-pages@v1
