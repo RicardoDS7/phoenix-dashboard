@@ -1,21 +1,21 @@
 name: Build & Deploy to GitHub Pages
 
-permissions:
-  contents: write
-  pages: write
-
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+
+permissions:
+  contents: write    # Needed by actions-gh-pages to push the branch
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
@@ -24,10 +24,10 @@ jobs:
         run: npm ci
 
       - name: Build static site
-        run: npm run deploy
+        run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
