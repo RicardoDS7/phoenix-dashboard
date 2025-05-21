@@ -57,7 +57,7 @@ export default function Home() {
         >
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
             <IoMdKey  size={25}/>
-            <h2 className="text-2xl font-semibold text-center">View Project Summary</h2>
+            <h2 className="text-2xl font-semibold text-center">Create Project Summary</h2>
           </div>
 
         </Link>
