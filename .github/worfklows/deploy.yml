@@ -3,10 +3,10 @@ name: Deploy Phoenix Dashboard to GitHub Pages
 on:
   push:
     branches:
-      - main  # or 'master' depending on your default branch
+      - main
 
 permissions:
-  contents: write  # needed for deploying to gh-pages
+  contents: write
 
 jobs:
   deploy:
@@ -31,4 +31,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
+          publish_dir: ./out  # or ./dist for Vite or other tools
