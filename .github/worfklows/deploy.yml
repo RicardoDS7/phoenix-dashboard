@@ -26,9 +26,10 @@ jobs:
       - name: Build static site
         run: npm run build
 
-      - name: Deploy to gh-pages branch
+      - name: Deploy to main via gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: main           # ← push to main instead of gh-pages
           publish_dir: ./out
-          publish_branch: gh-pages
+
