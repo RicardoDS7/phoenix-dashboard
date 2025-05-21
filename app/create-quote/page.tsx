@@ -6,101 +6,113 @@ import { db } from "../lib/firebase";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
-type Customer = {
+// Types
+
+interface Customer {
   id: string;
   name: string;
-};
+}
 
-type LineItem = {
+interface LineItem {
   description: string;
   qty: string;
   unit: string;
   margin: string;
   total: string;
   category: "shared" | "solar" | "battery";
-};
+}
 
-type SystemData = {
+interface SystemData {
   solarCapacity: string;
   panelQTY: string;
   batteryCapacity: string;
-};
+}
 
 export default function AddQuote() {
+  const router = useRouter();
+
+  // Customer state
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [quoteName, setQuoteName] = useState<string>("");
-  const router = useRouter();
 
+  // Line items state
   const [lineItems, setLineItems] = useState<LineItem[]>([
-    { description: "", qty: "", unit: "", margin: "0", total: "", category: "shared" },
+    {
+      description: "",
+      qty: "",
+      unit: "",
+      margin: "0",
+      total: "",
+      category: "shared",
+    },
   ]);
 
+  // Fetch customers once
   useEffect(() => {
     async function fetchCustomers() {
       try {
-        const querySnapshot = await getDocs(collection(db, "clients"));
-        const customerData = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name ? data.name : doc.id,
-          };
-        });
-        setCustomers(customerData);
-      } catch (error) {
-        console.error("Error fetching customers:", error);
+        const snap = await getDocs(collection(db, "clients"));
+        const list: Customer[] = snap.docs.map((d) => ({
+          id: d.id,
+          name: d.data().name || d.id,
+        }));
+        setCustomers(list);
+      } catch (err) {
+        console.error("Error fetching customers:", err);
       }
     }
     fetchCustomers();
   }, []);
 
-  const handleLineItemChange = (
+  // Typed handler for line item fields
+  const handleLineItemChange = <K extends keyof LineItem>(
     index: number,
-    field: keyof LineItem,
-    value: string
+    field: K,
+    value: LineItem[K]
   ) => {
-    const newLineItems = [...lineItems];
-    (newLineItems[index] as any)[field] = value;
+    const updated = [...lineItems];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    } as LineItem;
+
+    // Recalculate total when numeric fields change
     if (field === "qty" || field === "unit" || field === "margin") {
-      const qty = Number(newLineItems[index].qty);
-      const unit = Number(newLineItems[index].unit);
-      const margin = Number(newLineItems[index].margin) / 100;
-      newLineItems[index].total = (qty * unit * (1 + margin)).toString();
+      const qty = Number(updated[index].qty);
+      const unit = Number(updated[index].unit);
+      const margin = Number(updated[index].margin) / 100;
+      updated[index].total = (qty * unit * (1 + margin)).toString();
     }
-    setLineItems(newLineItems);
+
+    setLineItems(updated);
   };
 
   const addLineItem = () => {
-    setLineItems([
-      ...lineItems,
+    setLineItems((prev) => [
+      ...prev,
       { description: "", qty: "", unit: "", margin: "0", total: "", category: "shared" },
     ]);
   };
 
   const removeLineItem = (index: number) => {
-    if (lineItems.length > 1) {
-      setLineItems((prev) => prev.filter((_, i) => i !== index));
-    } else {
+    if (lineItems.length <= 1) {
       alert("At least one line item is required.");
+      return;
     }
+    setLineItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const rawTotal = lineItems.reduce(
-    (acc, item) => acc + Number(item.qty) * Number(item.unit),
-    0
-  );
+  // Totals
+  const rawTotal = lineItems.reduce((sum, itm) => sum + Number(itm.qty) * Number(itm.unit), 0);
   const overallTotal = lineItems.reduce(
-    (acc, item) =>
-      acc +
-      Number(item.qty) *
-        Number(item.unit) *
-        (1 + Number(item.margin) / 100),
+    (sum, itm) => sum + Number(itm.qty) * Number(itm.unit) * (1 + Number(itm.margin) / 100),
     0
   );
   const profit = overallTotal - rawTotal;
   const marginPercentage = rawTotal > 0 ? (profit / rawTotal) * 100 : 0;
 
+  // System data state
   const [systemData, setSystemData] = useState<SystemData>({
     solarCapacity: "",
     panelQTY: "",
@@ -111,19 +123,16 @@ export default function AddQuote() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setSystemData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setSystemData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Submit quote
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCustomer || !quoteName) {
       alert("Please select a customer and provide a quote name.");
       return;
     }
-
     try {
       await setDoc(
         doc(db, "clients", selectedCustomer, "quotes", quoteName),
@@ -143,8 +152,9 @@ export default function AddQuote() {
         }
       );
       alert("Quote saved successfully!");
-    } catch (error) {
-      console.error("Error saving quote:", error);
+      router.push("/");
+    } catch (err) {
+      console.error("Error saving quote:", err);
       alert("Error saving quote. Check console for details.");
     }
   };
@@ -153,7 +163,7 @@ export default function AddQuote() {
     <div className="min-h-screen p-4 flex flex-col items-center">
       <h1 className="text-4xl font-bold mb-8">Add Quote</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-6xl space-y-6">
-        {/* Customer selection and Quote Name */}
+        {/* Customer & Quote Name */}
         <div className="grid grid-cols-1 gap-4">
           <label className="block">
             <span className="text-gray-700">Select Customer</span>
@@ -164,9 +174,9 @@ export default function AddQuote() {
               required
             >
               <option value="">Select a customer</option>
-              {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
+              {customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
                 </option>
               ))}
             </select>
@@ -183,6 +193,7 @@ export default function AddQuote() {
           </label>
         </div>
 
+        {/* System Data */}
         <div className="grid grid-cols-3 gap-6">
           <label className="block">
             <span className="text-gray-700">Solar Capacity (kWp)</span>
@@ -194,7 +205,6 @@ export default function AddQuote() {
               className="mt-1 px-4 py-2 bg-gray-100 block w-full rounded-md border-gray-300"
             />
           </label>
-
           <label className="block">
             <span className="text-gray-700">Panel QTY</span>
             <input
@@ -205,7 +215,6 @@ export default function AddQuote() {
               className="mt-1 px-4 py-2 bg-gray-100 block w-full rounded-md border-gray-300"
             />
           </label>
-
           <label className="block">
             <span className="text-gray-700">Battery Capacity (kWh)</span>
             <input
@@ -221,19 +230,19 @@ export default function AddQuote() {
         {/* Line Items */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold">Items</h2>
-          {lineItems.map((item, index) => (
+          {lineItems.map((item, idx) => (
             <div
-              key={index}
+              key={idx}
               className="flex flex-row gap-2 border rounded-lg border-gray-300 p-4 items-center"
             >
-              <p className="font-bold">{index + 1}</p>
+              <p className="font-bold">{idx + 1}</p>
               <label className="block w-full">
                 <span className="text-gray-700">Description</span>
                 <input
                   type="text"
                   value={item.description}
                   onChange={(e) =>
-                    handleLineItemChange(index, "description", e.target.value)
+                    handleLineItemChange(idx, "description", e.target.value)
                   }
                   className="mt-1 block w-[360px] px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                   required
@@ -244,7 +253,7 @@ export default function AddQuote() {
                 <select
                   value={item.category}
                   onChange={(e) =>
-                    handleLineItemChange(index, "category", e.target.value)
+                    handleLineItemChange(idx, "category", e.target.value as LineItem["category"] )
                   }
                   className="mt-1 block w-[180px] px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                 >
@@ -259,7 +268,7 @@ export default function AddQuote() {
                   type="number"
                   value={item.qty}
                   onChange={(e) =>
-                    handleLineItemChange(index, "qty", e.target.value)
+                    handleLineItemChange(idx, "qty", e.target.value)
                   }
                   className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                   required
@@ -271,7 +280,7 @@ export default function AddQuote() {
                   type="number"
                   value={item.unit}
                   onChange={(e) =>
-                    handleLineItemChange(index, "unit", e.target.value)
+                    handleLineItemChange(idx, "unit", e.target.value)
                   }
                   className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                   required
@@ -283,7 +292,7 @@ export default function AddQuote() {
                   type="number"
                   value={item.margin}
                   onChange={(e) =>
-                    handleLineItemChange(index, "margin", e.target.value)
+                    handleLineItemChange(idx, "margin", e.target.value)
                   }
                   className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                   required
@@ -291,11 +300,15 @@ export default function AddQuote() {
               </label>
               <label className="block w-1/2">
                 <span className="text-gray-700">Total</span>
-                <input type="text" readOnly value={Number(item.total).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300" />
+                <input
+                  readOnly
+                  value={Number(item.total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300"
+                />
               </label>
               <button
                 type="button"
-                onClick={() => removeLineItem(index)}
+                onClick={() => removeLineItem(idx)}
                 className="mt-2 cursor-pointer font-bold py-1 px-2"
               >
                 <MdDelete size={25} color="red" />
@@ -305,12 +318,13 @@ export default function AddQuote() {
           <button
             type="button"
             onClick={addLineItem}
-            className="bg-green-500 cursor-pointer hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
+            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
           >
             Add Line Item
           </button>
         </div>
 
+        {/* Summary */}
         <div className="text-right font-bold text-xl mt-4">
           Overall Total: R {overallTotal.toFixed(2)}
         </div>
@@ -323,7 +337,7 @@ export default function AddQuote() {
 
         <button
           type="submit"
-          className="mt-8 bg-[#4c7380] cursor-pointer hover:bg-[#FFA07A] text-white font-bold py-2 px-4 rounded-full"
+          className="mt-8 bg-[#4c7380] hover:bg-[#FFA07A] text-white font-bold py-2 px-4 rounded-full"
         >
           Save Quote
         </button>
@@ -331,7 +345,7 @@ export default function AddQuote() {
 
       <button
         onClick={() => router.push("/")}
-        className="mt-8 bg-[#4c7380] cursor-pointer hover:bg-[#FFA07A] text-white font-bold py-2 px-4 rounded-full"
+        className="mt-8 bg-[#4c7380] hover:bg-[#FFA07A] text-white font-bold py-2 px-4 rounded-full"
       >
         Return Home
       </button>

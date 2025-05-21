@@ -6,8 +6,8 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "lint": "next lint",
-    "build": "next build && next export",
-    "deploy": "npm run build && gh-pages -d out/phoenix-dashboard",
+    "build": "next build",
+    "deploy": "npm run build && gh-pages -d out/phoenix-dashboard"
   },
   "dependencies": {
     "firebase": "^11.4.0",

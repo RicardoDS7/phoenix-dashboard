@@ -3,7 +3,6 @@ import Link from "next/link";
 import { TiUserAdd } from "react-icons/ti";
 import { MdRequestQuote } from "react-icons/md";
 import { IoMdKey } from "react-icons/io";
-import { HiMiniBolt } from "react-icons/hi2";
 import { FaUserEdit } from "react-icons/fa";
 import { MdEditDocument } from "react-icons/md";
 
