@@ -63,16 +63,6 @@ export default function Home() {
 
         </Link>
 
-        <Link href="/create-ppa-proposal"
-              className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
-        >
-          <div className="flex gap-6 justify-center items-center w-full h-full rounded">
-            <HiMiniBolt   size={25}/>
-            <h2 className="text-2xl font-semibold text-center">Create New PPA Proposal</h2>
-          </div>
-
-        </Link>
-
       </div>
     </div>
     
