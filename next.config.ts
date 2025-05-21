@@ -1,23 +1,11 @@
-// next.config.ts
-import type { NextConfig } from "next";
-
+// next.config.ts or next.config.js
 const isProd = process.env.NODE_ENV === "production";
 
-const nextConfig: NextConfig = {
-  // export to static HTML
-  output: "export",
-  // generate trailing slashes so folders work on GH-Pages
+const nextConfig = {
+  output: 'export',
   trailingSlash: true,
-
-  // in prod, prefix all routes & assets with /phoenix-dashboard
-  ...(isProd
-    ? {
-        basePath: "/phoenix-dashboard",
-        assetPrefix: "/phoenix-dashboard",
-      }
-    : {}),
-
-  // expose it at runtime in case you ever need to build absolute URLs
+  basePath: isProd ? "/phoenix-dashboard" : "",
+  assetPrefix: isProd ? "/phoenix-dashboard/" : "",
   env: {
     NEXT_PUBLIC_BASE_PATH: isProd ? "/phoenix-dashboard" : "",
   },
