@@ -6,8 +6,7 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "lint": "next lint",
-    "build": "next build && next export",
-    "deploy": "npm run build && gh-pages -d out"
+    "build": "next build && next export"
   },
   "dependencies": {
     "firebase": "^11.4.0",
