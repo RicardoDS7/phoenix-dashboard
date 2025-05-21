@@ -1,14 +1,19 @@
+// next.config.js
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
 const nextConfig: NextConfig = {
-   output: "export",
+  output: "export",
+  trailingSlash: true,
 
-  // ✅ Remove basePath and assetPrefix for custom domain hosting at root
-  images: {
-    unoptimized: true, // Required for static export to work with <Image>
-  },
-
-  trailingSlash: true, // Optional: keeps URLs consistent with a slash
+  // only add these in production builds
+  ...(isDev
+    ? {}
+    : {
+        basePath: "/phoenix-dashboard",
+        assetPrefix: "/phoenix-dashboard/",
+      }),
 };
 
 export default nextConfig;
