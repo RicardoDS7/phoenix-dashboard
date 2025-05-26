@@ -239,7 +239,7 @@ export default function EditQuote() {
       {quoteData && (
         <>
           {/* ✅ Safe PDF Export (no crash) */}
-          <QuotePDFExport data={quoteData} selectedQuote={selectedQuote} />
+          {/* <QuotePDFExport data={quoteData} selectedQuote={selectedQuote} /> */}
 
           <form onSubmit={handleSubmit} className="w-full max-w-6xl space-y-6" id="printable">
             <div className="grid grid-cols-3 gap-6">
