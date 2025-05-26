@@ -9,6 +9,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_BASE_PATH: isProd ? "/phoenix-dashboard" : "",
   },
+  experimental: {
+    esmExternals: 'loose', // ✅ Allow importing ESM-only packages like @react-pdf/renderer
+  },
 };
 
 export default nextConfig;

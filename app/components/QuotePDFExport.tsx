@@ -29,8 +29,9 @@ interface QuoteData {
   createdAt: Date;
 }
 
+// ✅ Correct ESM-compatible import
 const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
   { ssr: false }
 );
 
@@ -46,7 +47,9 @@ export default function QuotePDFExport({ data, selectedQuote }: Props) {
       fileName={`Quote-${selectedQuote}.pdf`}
       className="print-hidden bg-blue-600 text-white py-2 px-4 rounded-full mt-4"
     >
-      {({ loading }: any) => (loading ? 'Generating PDF...' : 'Export as PDF')}
+      {({ loading }: { loading: boolean }) =>
+        loading ? 'Generating PDF...' : 'Export as PDF'}
     </PDFDownloadLink>
   );
 }
+
