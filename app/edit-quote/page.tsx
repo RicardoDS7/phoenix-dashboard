@@ -5,6 +5,9 @@ import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import QuoteTemplate from "../components/quoteTemplate";
+
 
 // Types
 interface Client { id: string; name: string; }
@@ -188,6 +191,21 @@ export default function EditQuote() {
     { label: 'Battery Capacity (kWh)', name: 'batteryCapacity' }
   ];
 
+  const renderExportButton = () => {
+  if (!quoteData) return null;
+
+  return (
+      <PDFDownloadLink
+        document={<QuoteTemplate data={quoteData} />}
+        fileName={`Quote-${selectedQuote}.pdf`}
+        className="print-hidden bg-blue-600 text-white py-2 px-4 rounded-full mt-4"
+      >
+        {({ loading }) => (loading ? "Generating PDF..." : "Export as PDF")}
+      </PDFDownloadLink>
+    );
+  };
+
+
   return (
     <div className="min-h-screen p-4 flex flex-col items-center">
       <h1 className="text-4xl font-bold mb-8 print-hidden">Edit Quote</h1>
@@ -219,6 +237,8 @@ export default function EditQuote() {
       </div>
 
       {quoteData && (
+        <>
+         {renderExportButton()}
         <form onSubmit={handleSubmit} className="w-full max-w-6xl space-y-6" id="printable">
           <div className="grid grid-cols-3 gap-6">
             {systemFields.map(({ label, name }) => (
@@ -321,6 +341,7 @@ export default function EditQuote() {
             Save Changes
           </button>
         </form>
+        </>
       )}
 
       <button onClick={() => router.push("/")} className="mt-8 bg-[#4c7380] hover:bg-[#FFA07A] text-white font-bold py-2 px-4 rounded-full print-hidden">

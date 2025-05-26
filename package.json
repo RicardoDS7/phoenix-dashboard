@@ -9,6 +9,7 @@
     "build": "next build"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "firebase": "^11.4.0",
     "next": "15.2.1",
     "react": "^19.0.0",
