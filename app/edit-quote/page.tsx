@@ -5,12 +5,12 @@ import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 
 // 👇 Dynamically import PDF export component to prevent browser crash
-const QuotePDFExport = dynamic(() => import("../components/QuotePDFExport"), {
-  ssr: false,
-});
+// const QuotePDFExport = dynamic(() => import("../components/QuotePDFExport"), {
+//   ssr: false,
+// });
 
 // Types
 interface Client {
