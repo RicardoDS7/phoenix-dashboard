@@ -20,7 +20,7 @@ interface QuoteDetails {
   profit: number;
   marginPercentage: number;
   solarCapacity: string;
-  panelQTY: string;
+  inverterCapacity: string;
   batteryCapacity: string;
 }
 
