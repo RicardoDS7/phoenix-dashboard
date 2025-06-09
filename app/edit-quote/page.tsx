@@ -29,7 +29,7 @@ interface LineItem {
 
 interface SystemData {
   solarCapacity: string;
-  panelQTY: string;
+  inverterCapacity: string;
   batteryCapacity: string;
 }
 
@@ -40,7 +40,7 @@ interface QuoteDetails {
   profit: number;
   marginPercentage: number;
   solarCapacity: string;
-  panelQTY: string;
+  inverterCapacity: string;
   batteryCapacity: string;
 }
 
@@ -70,7 +70,7 @@ export default function EditQuote() {
   ]);
   const [systemData, setSystemData] = useState<SystemData>({
     solarCapacity: "",
-    panelQTY: "",
+    inverterCapacity: "",
     batteryCapacity: "",
   });
 
@@ -113,7 +113,7 @@ export default function EditQuote() {
           setLineItems(data.quoteDetails.lineItems);
           setSystemData({
             solarCapacity: data.quoteDetails.solarCapacity,
-            panelQTY: data.quoteDetails.panelQTY,
+            inverterCapacity: data.quoteDetails.inverterCapacity,
             batteryCapacity: data.quoteDetails.batteryCapacity,
           });
         }
@@ -194,7 +194,7 @@ export default function EditQuote() {
 
   const systemFields: { label: string; name: keyof SystemData }[] = [
     { label: "Solar Capacity (kWp)", name: "solarCapacity" },
-    { label: "Panel QTY", name: "panelQTY" },
+    { label: "Inverter Capacity (kW)", name: "inverterCapacity" },
     { label: "Battery Capacity (kWh)", name: "batteryCapacity" },
   ];
 

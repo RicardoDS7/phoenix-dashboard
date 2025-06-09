@@ -22,7 +22,7 @@ interface QuoteDetails {
   profit: number;
   marginPercentage: number;
   solarCapacity: string;
-  panelQTY: string;
+  inverterCapacity: string;
   batteryCapacity: string;
 }
 
@@ -69,7 +69,7 @@ const QuoteTemplate = ({ data }: Props) => {
           <Text>Client: {quoteDetails.selectedCustomer}</Text>
           <Text>Solar Capacity: {quoteDetails.solarCapacity} kWp</Text>
           <Text>Battery Capacity: {quoteDetails.batteryCapacity} kWh</Text>
-          <Text>Panel QTY: {quoteDetails.panelQTY}</Text>
+          <Text>Panel QTY: {quoteDetails.inverterCapacity}</Text>
         </View>
 
         {/* Header */}

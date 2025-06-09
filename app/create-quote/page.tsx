@@ -24,7 +24,7 @@ interface LineItem {
 
 interface SystemData {
   solarCapacity: string;
-  panelQTY: string;
+  inverterCapacity: string;
   batteryCapacity: string;
 }
 
@@ -115,7 +115,7 @@ export default function AddQuote() {
   // System data state
   const [systemData, setSystemData] = useState<SystemData>({
     solarCapacity: "",
-    panelQTY: "",
+    inverterCapacity: "",
     batteryCapacity: "",
   });
 
@@ -146,7 +146,7 @@ export default function AddQuote() {
             marginPercentage,
             batteryCapacity: systemData.batteryCapacity,
             solarCapacity: systemData.solarCapacity,
-            panelQTY: systemData.panelQTY,
+            panelQTY: systemData.inverterCapacity,
           },
           createdAt: new Date(),
         }
@@ -206,11 +206,11 @@ export default function AddQuote() {
             />
           </label>
           <label className="block">
-            <span className="text-gray-700">Panel QTY</span>
+            <span className="text-gray-700">Inverter Capacity (kW)</span>
             <input
               type="text"
               name="panelQTY"
-              value={systemData.panelQTY}
+              value={systemData.inverterCapacity}
               onChange={handleSystemChange}
               className="mt-1 px-4 py-2 bg-gray-100 block w-full rounded-md border-gray-300"
             />
@@ -290,6 +290,7 @@ export default function AddQuote() {
                 <span className="text-gray-700">Markup %</span>
                 <input
                   type="number"
+                  defaultValue={10}
                   value={item.margin}
                   onChange={(e) =>
                     handleLineItemChange(idx, "margin", e.target.value)
