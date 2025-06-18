@@ -7,7 +7,6 @@ import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 // Types
-
 interface Customer {
   id: string;
   name: string;
@@ -79,10 +78,10 @@ export default function AddQuote() {
 
     // Recalculate total when numeric fields change
     if (field === "qty" || field === "unit" || field === "margin") {
-      const qty = Number(updated[index].qty);
-      const unit = Number(updated[index].unit);
-      const margin = Number(updated[index].margin) / 100;
-      updated[index].total = (qty * unit * (1 + margin)).toString();
+      const qty = Number(updated[index].qty) || 0;
+      const unit = Number(updated[index].unit) || 0;
+      const margin = Number(updated[index].margin) / 100 || 0;
+      updated[index].total = ((qty * unit) * (1 + margin)).toString();
     }
 
     setLineItems(updated);
@@ -104,9 +103,13 @@ export default function AddQuote() {
   };
 
   // Totals
-  const rawTotal = lineItems.reduce((sum, itm) => sum + Number(itm.qty) * Number(itm.unit), 0);
+  const rawTotal = lineItems.reduce(
+    (sum, itm) => sum + (Number(itm.qty) || 0) * (Number(itm.unit) || 0),
+    0
+  );
   const overallTotal = lineItems.reduce(
-    (sum, itm) => sum + Number(itm.qty) * Number(itm.unit) * (1 + Number(itm.margin) / 100),
+    (sum, itm) =>
+      sum + (Number(itm.qty) || 0) * (Number(itm.unit) || 0) * (1 + (Number(itm.margin) || 0) / 100),
     0
   );
   const profit = overallTotal - rawTotal;
@@ -144,9 +147,9 @@ export default function AddQuote() {
             overallTotal,
             profit,
             marginPercentage,
-            batteryCapacity: systemData.batteryCapacity,
             solarCapacity: systemData.solarCapacity,
-            panelQTY: systemData.inverterCapacity,
+            inverterCapacity: systemData.inverterCapacity,
+            batteryCapacity: systemData.batteryCapacity,
           },
           createdAt: new Date(),
         }
@@ -209,7 +212,7 @@ export default function AddQuote() {
             <span className="text-gray-700">Inverter Capacity (kW)</span>
             <input
               type="text"
-              name="panelQTY"
+              name="inverterCapacity"
               value={systemData.inverterCapacity}
               onChange={handleSystemChange}
               className="mt-1 px-4 py-2 bg-gray-100 block w-full rounded-md border-gray-300"
@@ -253,7 +256,11 @@ export default function AddQuote() {
                 <select
                   value={item.category}
                   onChange={(e) =>
-                    handleLineItemChange(idx, "category", e.target.value as LineItem["category"] )
+                    handleLineItemChange(
+                      idx,
+                      "category",
+                      e.target.value as LineItem["category"]
+                    )
                   }
                   className="mt-1 block w-[180px] px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                 >
@@ -290,7 +297,6 @@ export default function AddQuote() {
                 <span className="text-gray-700">Markup %</span>
                 <input
                   type="number"
-                  defaultValue={10}
                   value={item.margin}
                   onChange={(e) =>
                     handleLineItemChange(idx, "margin", e.target.value)
@@ -303,7 +309,10 @@ export default function AddQuote() {
                 <span className="text-gray-700">Total</span>
                 <input
                   readOnly
-                  value={Number(item.total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  value={Number(item.total).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                   className="mt-1 block w-full px-4 py-2 bg-gray-100 rounded-md border-gray-300"
                 />
               </label>
