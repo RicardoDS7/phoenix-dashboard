@@ -73,6 +73,12 @@ export default function Home() {
     }
   });
 
+  type LoadProfile = string;
+
+  const [loadProfiles, setLoadProfiles] = useState<LoadProfile[]>([]);
+  const [selectedLoadProfile, setSelectedLoadProfile] = useState<string>("");
+
+
   // 1. Fetch document IDs from "eskom_tariffs" collection
   useEffect(() => {
     async function fetchEskomTariffs() {
@@ -86,6 +92,24 @@ export default function Home() {
     }
     fetchEskomTariffs();
   }, []);
+
+  useEffect(() => {
+  async function fetchData() {
+    try {
+      const tariffsSnap = await getDocs(collection(db, "eskom_tariffs"));
+      const tariffIds = tariffsSnap.docs.map((doc) => doc.id);
+      setEskomTariffs(tariffIds);
+
+      const profileSnap = await getDocs(collection(db, "load_profiles"));
+      const profileIds = profileSnap.docs.map((doc) => doc.id);
+      setLoadProfiles(profileIds);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+  fetchData();
+  }, []);
+
 
   // 2. Handle form input changes
   // We use the 'name' attribute on inputs to update the correct field
@@ -130,18 +154,20 @@ export default function Home() {
 
       await setDoc(doc(db, "clients", formData.projectName), {
         projectDetails: {
-            siteAddress: formData.siteAddress,
-            latitude: formData.latitude,
-            longitude: formData.longitude,
-            projectEPC: formData.projectEPC,
-            projectDetails: formData.projectDetails,
-            tariffType: formData.tariffType,
-            nmd: formData.nmd,
-            usage: { ...formData.usage },
-            fractions: { ...formData.fractions },
-            createdAt: new Date(),
-        }
+          siteAddress: formData.siteAddress,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          projectEPC: formData.projectEPC,
+          projectDetails: formData.projectDetails,
+          tariffType: formData.tariffType,
+          nmd: formData.nmd,
+          usage: { ...formData.usage },
+          fractions: { ...formData.fractions },
+          selectedLoadProfile,
+          createdAt: new Date(),
+        },
       });
+
 
       alert("Client saved successfully!");
       // Optionally reset the form or navigate away
@@ -282,6 +308,25 @@ export default function Home() {
           </label>
         </div>
 
+        <label className="block">
+          <span className="text-gray-700">Select Load Profile</span>
+          <select
+            value={selectedLoadProfile}
+            onChange={(e) => setSelectedLoadProfile(e.target.value)}
+            className="mt-1 px-4 py-2 bg-gray-100 block w-full 
+                      rounded-md border-gray-300 shadow-sm 
+                      focus:border-indigo-300 focus:ring focus:ring-indigo-200 
+                      focus:ring-opacity-50"
+          >
+            <option value="">Select a profile</option>
+            {loadProfiles.map((profileId) => (
+              <option key={profileId} value={profileId}>
+                {profileId}
+              </option>
+            ))}
+          </select>
+        </label>
+        
         <h3 className="text-2xl font-bold mt-6">Energy Consumption (Last 12 Months)</h3>
         <div className="grid grid-cols-3 gap-6">
           {Object.entries(formData.usage).map(([monthKey, monthValue]) => (
