@@ -3,7 +3,7 @@ import Link from "next/link";
 import { TiUserAdd } from "react-icons/ti";
 import { MdRequestQuote } from "react-icons/md";
 import { IoMdKey } from "react-icons/io";
-import { FaUserEdit } from "react-icons/fa";
+import { FaChartArea, FaUserEdit } from "react-icons/fa";
 import { MdEditDocument } from "react-icons/md";
 
 export default function Home() {
@@ -58,6 +58,16 @@ export default function Home() {
           <div className="flex gap-6 justify-center items-center w-full h-full rounded">
             <IoMdKey  size={25}/>
             <h2 className="text-2xl font-semibold text-center">View Project Summary</h2>
+          </div>
+
+        </Link>
+
+        <Link href="/add-load-profile"
+              className="hover:bg-gray-200 transtion duration-100 p-4 rounded-lg shadow-md"
+        >
+          <div className="flex gap-6 justify-center items-center w-full h-full rounded">
+            <FaChartArea  size={25}/>
+            <h2 className="text-2xl font-semibold text-center">Add/Edit Load Profile</h2>
           </div>
 
         </Link>
